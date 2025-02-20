@@ -9,7 +9,8 @@ RUN git clone https://github.com/neovim/neovim.git /tmp/neovim --depth 1 --branc
 
 # fzf builder
 FROM debian:{{ cookiecutter.debian_version }} AS fzf_build
-RUN apt update -y && apt install -y --no-install-recommends git
+RUN apt update -y && apt install -y --no-install-recommends git curl ca-certificates
+RUN update-ca-certificates
 RUN git clone --depth 1 https://github.com/junegunn/fzf.git /root/.fzf
 RUN /root/.fzf/install --bin
 RUN mv /root/.fzf/bin/fzf /usr/local/bin/fzf
