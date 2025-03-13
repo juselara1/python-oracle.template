@@ -2,7 +2,7 @@
 	"project_name": "Base Project",
 	"project_slut": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
 	"nvim_version": "v0.10.3",
-	"debian_version": "bookworm-slim",
+	"oracle_version": 9,
 	"env_vars": {
 		"array": []
 	}
