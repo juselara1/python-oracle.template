@@ -16,20 +16,20 @@ RUN git clone https://github.com/neovim/neovim.git /tmp/neovim --depth 1 --branc
 # RUN mv /root/.fzf/bin/fzf /usr/local/bin/fzf
 
 # starship builder
-# FROM oraclelinux:{{ cookiecutter.debian_version }} AS starship_build
+# FROM oraclelinux:{{ cookiecutter.oracle_version }} AS starship_build
 # RUN apt update -y && apt install -y --no-install-recommends curl ca-certificates
 # RUN update-ca-certificates
 # RUN curl -sS https://starship.rs/install.sh > install.sh && chmod +x install.sh
 # RUN ./install.sh --yes
 
 # zoxide builder
-# FROM oraclelinux:{{ cookiecutter.debian_version }} AS zoxide_build
+# FROM oraclelinux:{{ cookiecutter.oracle_version }} AS zoxide_build
 # RUN apt update -y && apt install -y --no-install-recommends curl ca-certificates
 # RUN update-ca-certificates
 # RUN curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 
 # chezmoi builder
-# FROM oraclelinux:{{ cookiecutter.debian_version }} AS chezmoi_build
+# FROM oraclelinux:{{ cookiecutter.oracle_version }} AS chezmoi_build
 # RUN apt update -y && apt install -y --no-install-recommends curl ca-certificates
 # RUN update-ca-certificates
 # RUN sh -c "$(curl -fsLS get.chezmoi.io)"
