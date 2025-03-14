@@ -1,38 +1,31 @@
 # neovim builder
 FROM oraclelinux:{{ cookiecutter.oracle_version }} AS nvim_build
-RUN apt update -y && apt install -y --no-install-recommends \
-	git build-essential ca-certificates cmake ninja-build gettext curl
-RUN update-ca-certificates
-RUN git clone https://github.com/neovim/neovim.git /tmp/neovim --depth 1 --branch {{ cookiecutter.nvim_version }} \
+RUN dnf config-manager --enable ol9_codeready_builder
+RUN dnf update
+RUN dnf install git ninja-build cmake gcc make gettext curl glibc-gconv-extra -y
+RUN git clone https://github.com/neovim/neovim.git /tmp/neovim --depth 1 --branch v0.10.3 \
 	&& cd /tmp/neovim \
 	&& make install
 
 # fzf builder
-# FROM oraclelinux:{{ cookiecutter.oracle_version }} AS fzf_build
-# RUN apt update -y && apt install -y --no-install-recommends git curl ca-certificates
-# RUN update-ca-certificates
-# RUN git clone --depth 1 https://github.com/junegunn/fzf.git /root/.fzf
-# RUN /root/.fzf/install --bin
-# RUN mv /root/.fzf/bin/fzf /usr/local/bin/fzf
+FROM oraclelinux:{{ cookiecutter.oracle_version }} AS fzf_build
+RUN dnf install git -y
+RUN git clone --depth 1 https://github.com/junegunn/fzf.git /root/.fzf
+RUN /root/.fzf/install --bin
+RUN mv /root/.fzf/bin/fzf /usr/local/bin/fzf
 
 # starship builder
-# FROM oraclelinux:{{ cookiecutter.oracle_version }} AS starship_build
-# RUN apt update -y && apt install -y --no-install-recommends curl ca-certificates
-# RUN update-ca-certificates
-# RUN curl -sS https://starship.rs/install.sh > install.sh && chmod +x install.sh
-# RUN ./install.sh --yes
+FROM oraclelinux:{{ cookiecutter.oracle_version }} AS starship_build
+RUN curl -sS https://starship.rs/install.sh > install.sh && chmod +x install.sh
+RUN ./install.sh --yes
 
 # zoxide builder
-# FROM oraclelinux:{{ cookiecutter.oracle_version }} AS zoxide_build
-# RUN apt update -y && apt install -y --no-install-recommends curl ca-certificates
-# RUN update-ca-certificates
-# RUN curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+FROM oraclelinux:{{ cookiecutter.oracle_version }} AS zoxide_build
+RUN curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 
 # chezmoi builder
-# FROM oraclelinux:{{ cookiecutter.oracle_version }} AS chezmoi_build
-# RUN apt update -y && apt install -y --no-install-recommends curl ca-certificates
-# RUN update-ca-certificates
-# RUN sh -c "$(curl -fsLS get.chezmoi.io)"
+FROM oraclelinux:{{ cookiecutter.oracle_version }} AS chezmoi_build
+RUN sh -c "$(curl -fsLS get.chezmoi.io)"
 
 # main image
 FROM oraclelinux:{{ cookiecutter.oracle_version }}
@@ -44,14 +37,12 @@ ARG DOTFILES_BRANCH
 
 COPY --from=nvim_build /usr/local/bin/nvim /usr/local/bin/nvim
 COPY --from=nvim_build /usr/local/share/nvim /usr/local/share/nvim
-# COPY --from=starship_build /usr/local/bin/starship /usr/local/bin/starship
-# COPY --from=fzf_build /usr/local/bin/fzf /usr/local/bin/fzf
-# COPY --from=zoxide_build /root/.local/bin/zoxide /usr/local/bin/zoxide
-# COPY --from=chezmoi_build /bin/chezmoi /usr/local/bin/chezmoi
+COPY --from=fzf_build /usr/local/bin/fzf /usr/local/bin/fzf
+COPY --from=starship_build /usr/local/bin/starship /usr/local/bin/starship
+COPY --from=zoxide_build /root/.local/bin/zoxide /usr/local/bin/zoxide
+COPY --from=chezmoi_build /bin/chezmoi /usr/local/bin/chezmoi
 
-# RUN apt update -y && apt install -y --no-install-recommends \
-# 	curl ca-certificates git tmux openssh-client
-# RUN update-ca-certificates
+RUN dnf install git tmux -y
 
 # Replicate the host user.
 RUN groupadd -g ${GROUP_ID} ${USER_NAME} \
@@ -63,4 +54,4 @@ USER ${USER_NAME}
 WORKDIR /home/${USER_NAME}/project
 
 # Dotfiles setup
-# RUN chezmoi init --apply --depth=1 --branch=${DOTFILES_BRANCH} ${DOTFILES_REPO}
+RUN chezmoi init --apply --depth=1 --branch=${DOTFILES_BRANCH} ${DOTFILES_REPO}
