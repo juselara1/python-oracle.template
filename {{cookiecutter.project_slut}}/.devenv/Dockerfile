@@ -42,7 +42,9 @@ COPY --from=starship_build /usr/local/bin/starship /usr/local/bin/starship
 COPY --from=zoxide_build /root/.local/bin/zoxide /usr/local/bin/zoxide
 COPY --from=chezmoi_build /bin/chezmoi /usr/local/bin/chezmoi
 
-RUN dnf install git tmux -y
+RUN dnf install git tmux libffi-devel zlib-devel bzip2-devel readline-devel \
+	sqlite-devel wget curl llvm ncurses-devel openssl-devel lzma-sdk-devel \
+	libyaml-devel redhat-rpm-config -y
 
 # Replicate the host user.
 RUN groupadd -g ${GROUP_ID} ${USER_NAME} \
@@ -52,6 +54,14 @@ RUN groupadd -g ${GROUP_ID} ${USER_NAME} \
 		"${USER_ID}:${GROUP_ID}" "/home/${USER_NAME}"
 USER ${USER_NAME}
 WORKDIR /home/${USER_NAME}/project
+
+# Install pyenv
+RUN git clone --depth=1 https://github.com/pyenv/pyenv.git "/home/${USER_NAME}/.pyenv"
+ENV PYENV_ROOT="/home/${USER_NAME}/.pyenv"
+ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${PATH}"
+RUN pyenv install {{ cookiecutter.python_version }}
+RUN pyenv global {{ cookiecutter.python_version }}
+RUN pip install uv
 
 # Dotfiles setup
 RUN chezmoi init --apply --depth=1 --branch=${DOTFILES_BRANCH} ${DOTFILES_REPO}

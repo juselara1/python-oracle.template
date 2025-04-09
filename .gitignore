@@ -1,0 +1,14 @@
+# Environment variables
+*.env
+
+# Python files
+*.env
+*.whl
+*.venv
+*.egg*
+*.ipynb
+**/*__pycache__/*
+**/*__.ipynb_checkpoints/*
+build/
+dist/
+sdist/

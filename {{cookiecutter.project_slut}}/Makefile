@@ -12,3 +12,23 @@ build-devenv: ## Builds the development environment.
 connect-devenv: ## Connects to the development environment.
 	docker compose up -d
 	docker exec -it {{ cookiecutter.project_slut }}-devenv bash
+
+##@ Dependencies
+compile-dependencies: ## Compiles dependencies
+	./.ci/helpers.sh compile_dependencies
+
+install: ## Installs dependencies
+	pip install .
+
+install-dev: ## Installs optional dependencies
+	pip install .[dev]
+
+update: ## Updates the package
+	pip install . --no-deps
+
+##@ Test
+type-test: ## Evaluates type safety
+	mypy src/
+
+lint-test: ## Runs linter
+	ruff check src/

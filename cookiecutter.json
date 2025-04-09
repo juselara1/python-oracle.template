@@ -1,8 +1,10 @@
 {
 	"project_name": "Base Project",
 	"project_slut": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
-	"nvim_version": "v0.10.3",
+	"project_description": "Description",
+	"nvim_version": "v0.11.0",
 	"oracle_version": 9,
+	"python_version": "3.12.7",
 	"env_vars": {
 		"array": []
 	}
