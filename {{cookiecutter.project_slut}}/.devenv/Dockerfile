@@ -42,9 +42,11 @@ COPY --from=starship_build /usr/local/bin/starship /usr/local/bin/starship
 COPY --from=zoxide_build /root/.local/bin/zoxide /usr/local/bin/zoxide
 COPY --from=chezmoi_build /bin/chezmoi /usr/local/bin/chezmoi
 
+RUN dnf config-manager --enable ol9_codeready_builder
+RUN dnf update
 RUN dnf install git tmux libffi-devel zlib-devel bzip2-devel readline-devel \
-	sqlite-devel wget curl llvm ncurses-devel openssl-devel lzma-sdk-devel \
-	libyaml-devel redhat-rpm-config -y
+	sqlite-devel wget curl llvm ncurses-devel openssl-devel libyaml-devel \
+	redhat-rpm-config cmake gcc gettext -y
 
 # Replicate the host user.
 RUN groupadd -g ${GROUP_ID} ${USER_NAME} \
